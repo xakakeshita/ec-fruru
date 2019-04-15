@@ -3975,7 +3975,30 @@ class EccubeProdProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBundl
 
         }
 
-        elseif (0 === strpos($pathinfo, '/products')) {
+        // customize_samplepage_testmethod
+        if ('/sample' === $pathinfo) {
+            $ret = array (  '_controller' => 'Customize\\Controller\\SamplePageController::testMethod',  '_route' => 'customize_samplepage_testmethod',);
+            $requiredSchemes = array (  'https' => 0,  'http' => 1,);
+            $hasRequiredScheme = isset($requiredSchemes[$context->getScheme()]);
+            if (!in_array($canonicalMethod, ['GET'])) {
+                if ($hasRequiredScheme) {
+                    $allow = array_merge($allow, ['GET']);
+                }
+                goto not_customize_samplepage_testmethod;
+            }
+            if (!$hasRequiredScheme) {
+                if ('GET' !== $canonicalMethod) {
+                    goto not_customize_samplepage_testmethod;
+                }
+
+                return array_replace($ret, $this->redirect($rawPathinfo, 'customize_samplepage_testmethod', key($requiredSchemes)));
+            }
+
+            return $ret;
+        }
+        not_customize_samplepage_testmethod:
+
+        if (0 === strpos($pathinfo, '/products')) {
             // product_list
             if ('/products/list' === $pathinfo) {
                 $ret = array (  '_controller' => 'Eccube\\Controller\\ProductController::index',  '_route' => 'product_list',);
